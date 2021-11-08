@@ -37,15 +37,19 @@ jobs:
         python lint_test.py
   style:
     needs: pre-build
-    runs-on: {{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python: [ 2.7, 3.8, 3.9]
+        os: [ ubuntu-latest ]
+        python-version: ['2.7', '3.8', '3.9']
+#         python-version: ['3.9']        
+        exclude:
+          - os: macos-latest
+            python-version: '3.8'
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python }}
@@ -68,6 +72,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+    - run: ls -a
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
@@ -88,7 +93,7 @@ jobs:
         python --version
         python3 -m doctest factorial.py
   SAST:
-    needs: [unit-test]
+    needs: [ unit-test ]  
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -101,7 +106,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   deploy:
-    needs: [SAST]
+    needs: [ SAST ]
     runs-on: ubuntu-latest
     steps:
     - run: echo "Deploy to production"
