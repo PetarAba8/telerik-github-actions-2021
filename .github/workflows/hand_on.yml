@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-    - run: echo "${{ secrets.PASSWORD }}"
-    - name: Print custom environment variables from ubuntu-latest
+    - run: echo "${{ secrets.PASSWORD }}"    
+    - name: Print custom environment variables from ubuntu-latest    
       env:
         STEP_ENVIRONMENT_VARIABLE: 'custom step environment variable for bash'
       run: |
@@ -34,4 +34,23 @@ jobs:
         pip install pylint
     - name: Lint with pylint
       run: |
-        python lint_test.py    
+        python lint_test.py
+  style:
+    needs: pre-build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        pip install pycodestyle
+    - name: Style with pycodestyle
+      run: |
+        python --version
+        pycodestyle *.py
